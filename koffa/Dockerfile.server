@@ -1,0 +1,22 @@
+FROM golang:1.17
+
+ENV ENV="development"
+
+WORKDIR /go/src/app
+
+# copy the needed packges and install them
+COPY go.mod go.sum ./
+RUN go get -d -v ./...
+RUN go install -v ./...
+
+# copy the rest of code and build it
+COPY . .
+
+# RUN go build -o /server .
+# CMD ["/server"]
+
+# CompileDaemon to listen for changes
+RUN ["go", "get", "github.com/githubnemo/CompileDaemon"]
+CMD CompileDaemon -command="./koffa.service" -polling=true
+
+EXPOSE 8998
